@@ -1,0 +1,3 @@
+import { AuditLogEntry, UserProfile } from '../../types';
+export interface AuditContext { requestId:string; ipHash?:string; device?:string; reason?:string; previousHash?:string; }
+export function buildAuditEntry(user:UserProfile, action:AuditLogEntry['action'], module:string, recordId:string, details:string, context:AuditContext):AuditLogEntry { return { id:`aud-${Date.now()}-${Math.random().toString(36).slice(2,8)}`, timestamp:new Date().toISOString(), userId:user.id, userName:user.name, action, module, recordId, details, ipHash:context.ipHash||'unknown', requestId:context.requestId, result:'SUCCESS', metadata:{reason:context.reason,device:context.device}, previousHash:context.previousHash }; }

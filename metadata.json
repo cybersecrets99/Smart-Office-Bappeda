@@ -1,0 +1,6 @@
+{
+  "name": "e-KANJOLI Smart Office",
+  "description": "Smart Office Bappeda & Litbang Terpadu — Persuratan, e-Disposisi, Tugas SLA, Perjalanan, Aset QR, Rapat, Arsip Google Ecosystem & PEKPPP.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

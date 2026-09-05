@@ -1,0 +1,62 @@
+/**
+ * e-KANJOLI Smart Office Bappeda & Litbang
+ * Types & Domain Model conforming to Technical Blueprint v3.0
+ */
+
+export type UserRole = 
+  | 'SUPERADMIN' | 'OPR_FRONTOFFICE' | 'ADMIN_PEKPPP' | 'ADMIN_PERENCANAAN' | 'ADMIN_LITBANG' | 'ADMIN_SEKRETARIAT' | 'KEPALA_BADAN' | 'PEGAWAI'
+  | 'SEKRETARIS' | 'KASUBAG_UMPEG' | 'KASUBAG_ASETKEU' | 'KASUBAG_PERENCANAAN' | 'ADMIN_SEKRET'
+  | 'KABID_PERENCANAAN_MAKRO' | 'STAF_PERENCANA_MAKRO' | 'ADMIN_MAKRO' | 'KABID_PERENCANAAN_EKONOMI' | 'STAF_PERENCANA_EKONOMI' | 'ADMIN_EKONOMI'
+  | 'KABID_PERENCANAAN_SOSBUD' | 'STAF_PERENCANAAN_SOSBUD' | 'ADMIN_SOSBUD' | 'KABID_PERENCANAAN_FISPRA' | 'STAF_PERENCANAAN_FISPRA' | 'ADMIN_FISPRA'
+  | 'KABID_PERENCANAAN_LITBANG' | 'STAF_FUNGSIONAL'
+  | 'KABID_PERENCANAAN' | 'KABID_LITBANG' | 'KASUBAG_UMUM' | 'STAF_PERENCANA' | 'STAF_LITBANG';
+
+export type RbacScope = 'OWN' | 'ASSIGNED' | 'UNIT' | 'ALL';
+export type RbacAction = 'VIEW' | 'CREATE' | 'EDIT' | 'DELETE' | 'APPROVE' | 'REJECT' | 'DOWNLOAD' | 'UPLOAD' | 'EXPORT' | 'MANAGE';
+
+export interface RolePermissionConfig {
+  role: UserRole; roleLabel: string;
+  category: 'PIMPINAN' | 'SEKRETARIAT' | 'BIDANG_MAKRO' | 'BIDANG_EKONOMI' | 'BIDANG_SOSBUD' | 'BIDANG_FISPRA' | 'BIDANG_LITBANG' | 'PELAKSANA' | 'ADMIN';
+  allowedModules: string[]; canCreateDisposition: boolean; canApproveLetters: boolean; canManageUsers: boolean; workOnlyMode: boolean;
+}
+
+export interface UserProfile {
+  id: string; nip: string; name: string; email: string; position: string; unit: string; role: UserRole; scope: RbacScope; rank?: string;
+  employmentType?: 'PNS' | 'PPPK' | 'HONORER'; phone?: string; telegram?: string; telegramChatId?: string; avatarUrl?: string;
+}
+
+export type UrgencyLevel = 'SANGAT_SEGERA' | 'SEGERA' | 'BIASA' | 'RAHASIA';
+export interface LetterIn {
+  id: string; agendaNo: string; letterNo: string; sender: string; subject: string; receiveDate: string; letterDate: string; urgency: UrgencyLevel;
+  classificationCode: string; driveFileId: string; driveFileName: string; status: 'REGISTERED' | 'DISPOSITIONED' | 'IN_PROGRESS' | 'COMPLETED';
+  dispositionCount: number; summaryAi?: string; unitId: string; createdAt: string; createdBy: string;
+}
+export type WorkflowState = 'DRAFT' | 'REVIEW' | 'APPROVED' | 'OTP_REQUIRED' | 'SIGNED' | 'ARCHIVED' | 'CLOSED';
+export interface SystemConfiguration {
+  archiveDriveFolder: string; archiveViewOnly: boolean; telegramOtpEnabled: boolean; telegramWarningThresholdPercent: number;
+  telegramEscalationThresholdPercent: number; offlineQueueEnabled: boolean; yearlySheetsSharding: boolean;
+}
+export type WorkflowStepCode = 'DRAFT' | 'REVIEW' | 'APPROVAL' | 'NUMBERING' | 'GENERATE_PDF' | 'ARCHIVE' | 'COMPLETE';
+export interface LetterOut {
+  id: string; draftNo: string; letterNo?: string; type: 'NOTA_DINAS' | 'SURAT_TUGAS' | 'SURAT_UNDANGAN' | 'SURAT_EDARAN' | 'TELAAHAN_STAF';
+  recipient: string; subject: string; classificationCode: string; workflowStep: WorkflowStepCode; workflowStatus: 'PENDING' | 'APPROVED' | 'REVISED' | 'REJECTED';
+  content: string; unitId: string; createdBy: string; createdByName: string; createdAt: string; reviewedBy?: string; approvedBy?: string;
+  driveFileId?: string; pdfGenerated: boolean; slaHoursRemaining: number;
+}
+export interface Disposition { id: string; letterInId: string; letterNo: string; letterSubject: string; fromUserId: string; fromUserName: string; fromRole: UserRole; toRole: UserRole; toUserName: string; urgency: UrgencyLevel; instructions: string[]; notes: string; deadline: string; status: 'PENDING'|'PROCESSED'|'COMPLETED'; createdAt: string; }
+export type SlaStatus = 'ON_TRACK' | 'WARNING' | 'OVERDUE';
+export interface TaskItem { id:string; title:string; description:string; assignedTo:string; assignedToName:string; unitId:string; sourceType:'DISPOSISI'|'RAPAT'|'PROGRAM_KERJA'|'MANDIRI'; sourceRefId?:string; priority:'HIGH'|'MEDIUM'|'LOW'; dueDate:string; slaHoursTotal:number; slaHoursRemaining:number; slaStatus:SlaStatus; progress:number; status:'TODO'|'IN_PROGRESS'|'REVIEW'|'DONE'; completionNotes?:string; attachmentDriveId?:string; createdAt:string; }
+export interface OfficialTrip { id:string;sptNumber:string;sppdNumber:string;purpose:string;destination:string;departureDate:string;returnDate:string;durationDays:number;assignedOfficers:{nip:string;name:string;position:string}[];transportType:'PESAWAT'|'KENDARAAN_DINAS'|'KERETA'|'KAPAL';budgetAccount:string;estimatedCost:number;status:'DRAFT'|'VERIFIED'|'APPROVED'|'EXECUTED'|'REPORTED';laporanTrip?:string;createdAt:string;createdBy:string; }
+export interface AssetItem { id:string;assetCode:string;nup:string;name:string;brand:string;category:'ELEKTRONIK'|'KENDARAAN'|'PERALATAN_STUDIO'|'FURNITURE'|'SERVER_TI';acquisitionYear:number;purchaseValue:number;condition:'BAIK'|'RUSAK_RINGAN'|'RUSAK_BERAT';picName:string;picNip:string;roomLocation:string;qrCodeToken:string;lastMaintenance:string;status:'DIGUNAKAN'|'TERSEDIA'|'PEMELIHARAAN'|'DIHAPUSKAN'; }
+export interface MeetingItem { id:string;agendaType?:'RAPAT'|'KEGIATAN';title:string;date:string;meetingDate?:string;startTime:string;endTime:string;room:string;location?:string;meetingType:'OFFLINE'|'ONLINE_ZOOM'|'HYBRID';zoomLink?:string;meetLink?:string;leaderName:string;leader?:string;participants:string[];attendeesCount?:number;agenda?:string[];notes?:string;notulensiSummary?:string;resultDocumentName?:string;resultDocumentNo?:string;resultSubmittedAt?:string;archivedAt?:string;actionItems:{id:string;item?:string;action?:string;pic:string;deadline:string;done?:boolean;isConvertedToTask?:boolean}[];driveNotulensiId?:string;driveMinutesFileId?:string;status:'UPCOMING'|'ONGOING'|'FINISHED'|'COMPLETED'; }
+export interface ArchiveDocument { id:string;documentNo:string;classificationCode:string;title:string;category:'RPJMD'|'RKPD'|'RENJA'|'SAKIP'|'LKPJ'|'SIPD'|'KELITBANGAN'|'REGULASI'|'PERENCANAAN'|'LITBANG'|'PERSURATAN'|'ASET'|'RAPAT'|'PEKPPP'|'PUBLIK'|'LAINNYA';year?:number;retentionYears:number;retentionUntil?:number;securityDegree?:'BIASA'|'TERBATAS'|'RAHASIA'|'SANGAT_RAHASIA';securityLevel?:string;unitCreator?:string;createdBy?:string;driveFolder:string;driveFileId:string;fileName?:string;driveFileName?:string;fileSize:string;mimeType:string;uploadedBy?:string;uploadedAt:string;tags:string[]; }
+export interface PlanningIndicator { id:string;code:string;programName:string;activityName:string;subActivityName:string;targetYear:string;targetValue:string;realizationValue:string;achievementPercentage:number;budgetTotal:number;budgetRealization:number;unitPic:string;status:'SESUAI_TARGET'|'PERLU_PERHATIAN'|'DIBAWAH_TARGET'; }
+export interface ResearchItem { id:string;title:string;principalInvestigator:string;focusArea:'SOSIAL_PEMERINTAHAN'|'EKONOMI_PEMBANGUNAN'|'INFRASTRUKTUR_WILAYAH'|'INOVASI_DAERAH';collaborationPartner?:string;year:number;stage:'PROPOSAL'|'PENGUMPULAN_DATA'|'ANALISIS'|'SEMINAR_AKHIR'|'LAPORAN_FINAL'|'DRAFT_KEBIJAKAN';innovationScore:number;policyBriefUrl?:string;status:'ON_GOING'|'COMPLETED'|'RECOMMENDED_TO_BUPATI'; }
+export interface PekpppIndicator { id:string;aspectCode:'F01'|'F02'|'F03'|'F04'|'F05'|'F06';aspectName:string;aspectWeight:number;indicatorCode:string;indicatorName:string;maxScore:number;currentScore:number;evidenceName:string;evidenceDriveFileId:string;status:'TERVERIFIKASI'|'PERBAIKAN'|'BELUM_LENGKAP';reviewerNotes?:string; }
+export interface AuditLogEntry { id:string;timestamp:string;userId:string;userName:string;action:'LOGIN'|'CREATE'|'EDIT'|'DELETE'|'APPROVE'|'REJECT'|'DOWNLOAD'|'UPLOAD'|'GENERATE'|'ARCHIVE'|'SWITCH_ROLE';module:string;recordId:string;oldValue?:string;newValue?:string;details?:string;ipHash:string;requestId:string;result:'SUCCESS'|'DENIED'|'FAILED';metadata?:Record<string,unknown>;previousHash?:string; }
+export interface NotificationItem { id:string;title:string;message:string;type:'INFO'|'WARNING'|'SUCCESS'|'URGENT';timestamp:string;read:boolean;channel:'IN_APP'|'TELEGRAM'|'EMAIL';moduleTarget:string;telegramPayload?:{chatId:string;botUsername:string;markdownText:string}; }
+export interface NumberingConfig { module:string;prefix:string;format:string;counter:number;year:number;resetPeriod:'ANNUAL'|'MONTHLY';active:boolean; }
+export interface PublicService { id:string;no:number;code:string;name:string;unitInCharge:'Bidang Perencanaan Makro'|'Bidang Perencanaan Ekonomi'|'Bidang Perencanaan Sosbud'|'Bidang Perencanaan Fispra'|'Bidang Litbang & Inovasi'|'Sekretariat';targetSla:string;slaDays:number;requiredDocuments:string[];allowedFormats:string[];maxFileSizeMb:number;outputDocument:string;description:string;sopInfo:string;status:'AKTIF'|'NONAKTIF';iconName?:string; }
+export type PublicServiceStatus = 'PENGAJUAN'|'VERIFIKASI'|'PROSES'|'SELESAI'|'ARSIP'|'DITOLAK';
+export interface PublicServiceSubmission { id:string;ticketNo:string;serviceId:string;serviceCode:string;serviceName:string;unitInCharge:string;applicantName:string;applicantIdentityNo:string;applicantAgency:string;applicantEmail:string;applicantPhone:string;title:string;notes?:string;submissionDate:string;uploadedFiles:{id:string;name:string;requirementLabel:string;sizeBytes:number;sizeFormatted:string;mimeType:string;fileUrl?:string;uploadedAt:string}[];status:PublicServiceStatus;verifiedBy?:string;verifiedAt?:string;verificationNotes?:string;rejectionReason?:string;processedBy?:string;processedAt?:string;processingNotes?:string;parafSekbanAt?:string;parafKabidAt?:string;parafNotes?:string;completedAt?:string;tteSignedBy?:string;tteNumber?:string;outputDocumentName?:string;outputDocumentNo?:string;outputDocumentUrl?:string;isArchived:boolean;archiveDocumentId?:string;archivedAt?:string;history:{step:string;status:PublicServiceStatus;actor:string;timestamp:string;comment:string}[]; }
+export interface OrganizationUnit { id:string;name:string;code:string;type:'KEPALA_BADAN'|'SEKRETARIAT'|'SUB_BAGIAN'|'BIDANG'|'SUB_BIDANG'|'UNIT_PELAKSANA';parentId:string|null;leaderTitle:string;leaderName:string;leaderNip?:string;order:number;description?:string;staffCount?:number;children?:OrganizationUnit[]; }
